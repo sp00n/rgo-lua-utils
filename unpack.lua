@@ -107,7 +107,9 @@ for i = 1, count do
         else
             local fullname = current_dir .. fn
             if 8 == typ then
-                print("[" .. fullname .. "]")
+                if "debug" == out_path then
+                    print("[" .. fullname .. "]")
+                end
                 mkdir(fullname)
             elseif nil == filter or typ == filter then
                 print(fullname)
