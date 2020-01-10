@@ -42,6 +42,8 @@ pack content of .\import directory to .\out\DATA8.PAK (specific name):
 ---
 ### Convert ###
 ###  
+\*.DAT, \*.IMAGESET, \*.ANIMATION and \*.WDAT can be converted.
+###  
 ```text
 usage:
     lua dat2lua.lua <INPUT.DAT> [OUTPUT.lua]
