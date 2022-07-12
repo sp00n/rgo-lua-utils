@@ -1,4 +1,6 @@
-assert("Lua 5.3" == _VERSION)
+if ( tonumber(_VERSION:match("%d+%.?%d?")) < 5.3 ) then
+    error("You need to use at least LUA version 5.3!")
+end
 
 local zlib = require("zlib")
 local lfs = require("lfs")

@@ -1,4 +1,6 @@
-assert("Lua 5.3" == _VERSION)
+if ( tonumber(_VERSION:match("%d+%.?%d?")) < 5.3 ) then
+    error("You need to use at least LUA version 5.3!")
+end
 
 local in_file = assert(arg[1], "\n\n[ERR] no input\n")
 local out_file = arg[2] or nil
