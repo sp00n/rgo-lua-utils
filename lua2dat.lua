@@ -14,6 +14,40 @@ local function uint16(v) return string.pack("<H",  v) end
 local function uint8(v)  return string.pack("B",   v) end
 local function float(v)  return string.pack("f",   v) end
 
+-- utils
+
+-- Get the OS type
+local function get_os_type()
+     local dir_separator = package.config:sub(1,1)
+
+     if ( dir_separator == "\\\\" or dir_separator == "\\") then
+        return "win"
+    elseif ( dir_separator == "/" ) then
+        return "unix"
+    end
+
+    return "unknown"
+end
+
+
+-- Get the path the script is running in
+local function get_script_path()
+    local os_type = get_os_type()
+    local path_str = debug.getinfo(2, "S").source:sub(2)
+
+    if ( os_type == "win" ) then
+        return path_str:match("(.*[/\\])") or ""
+    elseif ( os_type == "unix" ) then
+        return path_str:match("(.*/)") or "."
+    end
+
+    return ""
+end
+
+
+-- path
+local script_path = get_script_path()
+
 
 -- dictionaries
 local dict_i = {name = "internal"}  -- from current file
@@ -81,19 +115,19 @@ end
 -------------------------------------------------------------------------------
 
 -- generate types dictionary
-local d = dofile("dict_types.lua")
+local d = dofile(script_path .. "dict_types.lua")
 for i = 1, #d, 2 do
     dict_t[d[i+1]] = d[i]
 end
 
 -- generate external dictionary
-d = dofile("dict_external.lua")
+d = dofile(script_path .. "dict_external.lua")
 for i = 1, #d, 2 do
     dict_e[d[i+1]] = d[i]
 end
 
 --[=[ update external dictionary
-d = dofile("dict_parsed.lua")
+d = dofile(script_path .. "dict_parsed.lua")
 for i = 1, #d, 2 do
     dict_e[d[i+1]] = d[i]
 end

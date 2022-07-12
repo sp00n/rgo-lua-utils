@@ -14,6 +14,36 @@ local function float(v)  return string.unpack("f",   v or r:read(4)) end
 
 
 -- utils
+
+-- Get the OS type
+local function get_os_type()
+     local dir_separator = package.config:sub(1,1)
+
+     if ( dir_separator == "\\\\" or dir_separator == "\\") then
+        return "win"
+    elseif ( dir_separator == "/" ) then
+        return "unix"
+    end
+
+    return "unknown"
+end
+
+
+-- Get the path the script is running in
+local function get_script_path()
+    local os_type = get_os_type()
+    local path_str = debug.getinfo(2, "S").source:sub(2)
+
+    if ( os_type == "win" ) then
+        return path_str:match("(.*[/\\])") or ""
+    elseif ( os_type == "unix" ) then
+        return path_str:match("(.*/)") or "."
+    end
+
+    return ""
+end
+
+
 local function tab(level)
     return ((" "):rep(2 * level))
 end
@@ -33,6 +63,9 @@ local function errlog(err)
     io.stderr:write(err)
 end
 
+
+-- path
+local script_path = get_script_path()
 
 -- dictionaries
 local dict_i = {name = "internal"}  -- from current file
@@ -155,13 +188,13 @@ r = assert(io.open(in_file, "rb"))
 assert(6 == uint8(), "\n\n[ERR] looks like not a DAT-file\n")
 
 -- generate types dictionary
-local d = dofile("dict_types.lua")
+local d = dofile(script_path .. "dict_types.lua")
 for i = 1, #d, 2 do
     dict_t[d[i]] = d[i+1]
 end
 
 -- generate external dictionary
-d = dofile("dict_external.lua")
+d = dofile(script_path .. "dict_external.lua")
 for i = 1, #d, 2 do
     dict_e[d[i]] = d[i+1]
 end
