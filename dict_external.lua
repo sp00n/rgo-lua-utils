@@ -1606,6 +1606,7 @@ local dict = {
 63639208, "FIGHTER_MANEUVER",
 771083632, "MASK_FILE",
 3028534182, "DAMAGED_OVERLAY",
+--]]
 }
 
 return dict
