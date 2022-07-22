@@ -280,6 +280,8 @@ out:write("local content = {\n")
 out:write(table.concat(output, "\n"))
 out:write("\n}\nreturn L, content\n")
 
+
 if out_file then
     out:close()
+    print(string.format("Created %s", out_file))
 end

@@ -128,7 +128,12 @@ local function indent(level, str)
 end
 
 
-local out = io.stdout
+-- Output
+-- local out = io.stdout
+local out = {}
+function out.write(v)
+end
+
 
 local function errlog(err)
     io.stderr:write(err)
@@ -851,3 +856,6 @@ STR = STR .. 'return LAYOUT'
 
 out:write(STR)
 out:close()
+
+
+print(string.format("Created %s", out_file))
