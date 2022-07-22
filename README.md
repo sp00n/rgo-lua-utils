@@ -10,7 +10,8 @@ to be used a mod for the game.
 * At least Lua 5.3 (http://www.lua.org/download.html)
 * lua-zlib (https://github.com/brimworks/lua-zlib)
 * lua-lfs (https://github.com/keplerproject/luafilesystem)
-* 
+* A package containing all of these files can be found here:  
+[https://github.com/sp00n/rgo-lua-pack](https://github.com/sp00n/rgo-lua-pack)
 ---
 
 
