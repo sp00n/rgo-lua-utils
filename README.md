@@ -1,9 +1,24 @@
+# Rebel Galaxy Outlaw LUA Utils
+
+These utilities, originally created by [hhrhhr](https://github.com/hhrhhr), can be used to unpack the `DATA.PAK` files for Rebel Galaxy Outlaw,
+and as well to convert the extracted files into human-readable LUA files, which can then be converted back into a .PAK file
+to be used a mod for the game.
+
+
 ### Requirements ###
 ###  
 * At least Lua 5.3 (http://www.lua.org/download.html)
 * lua-zlib (https://github.com/brimworks/lua-zlib)
 * lua-lfs (https://github.com/keplerproject/luafilesystem)
+* 
 ---
+
+
+### Mod Helpers ###
+See here for a couple of batch files that help with extracting / creating mod files:  
+[https://github.com/sp00n/rgo-mod-helpers](https://github.com/sp00n/rgo-mod-helpers)  
+---
+
 
 ### Unpack a .PAK file ###
 ###  
@@ -82,3 +97,9 @@ Convert a .lua file back into a .LAYOUT file (an output file *is* necessary!):
     lua lua2layout.lua .\work\MEDIA\16_DERPTEST.LAYOUT.lua .\import\MEDIA\16_DERPTEST.LAYOUT
 ```
 ---
+
+
+
+### Credits
+hhrhhr / Dmitry Zaitsev  
+sp00n  
