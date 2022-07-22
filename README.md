@@ -5,24 +5,23 @@ and as well to convert the extracted files into human-readable LUA files, which 
 to be used a mod for the game.
 
 
-### Requirements ###
-###  
+## Requirements
 * At least Lua 5.3 (http://www.lua.org/download.html)
 * lua-zlib (https://github.com/brimworks/lua-zlib)
 * lua-lfs (https://github.com/keplerproject/luafilesystem)
-* A package containing all of these files can be found here:  
-[https://github.com/sp00n/rgo-lua-pack](https://github.com/sp00n/rgo-lua-pack)
+
+A package containing all of these files can be found here: [https://github.com/sp00n/rgo-lua-pack](https://github.com/sp00n/rgo-lua-pack)
 ---
 
 
-### Mod Helpers ###
-See here for a couple of batch files that help with extracting / creating mod files:  
+## Mod Helpers
+I've created a couple of useful batch files that help with extracting & creating mod files:  
 [https://github.com/sp00n/rgo-mod-helpers](https://github.com/sp00n/rgo-mod-helpers)  
 ---
 
 
-### Unpack a .PAK file ###
-###  
+### Unpack a .PAK file
+
 ```text
 Usage:
     lua unpack.lua <INPUT.PAK> [OUTPUT_DIR [FILTER]]
@@ -45,8 +44,8 @@ Filters:
 ```
 ---
 
-### Pack a directory into a .PAK file ###
-###  
+### Pack a directory into a .PAK file
+
 ```text
 Usage:
     lua pack.lua <INPUT_DIR> [OUTPUT_NAME]
@@ -59,10 +58,10 @@ Pack the content of the .\import directory into .\out\DATA8.PAK (specific name):
 ```
 ---
 
-### Convert to .lua and back ###
-###  
+### Convert to .lua and back
+
 \*.DAT, \*.IMAGESET, \*.ANIMATION and \*.WDAT can be converted.
-###  
+
 ```text
 Usage:
     lua dat2lua.lua <INPUT.DAT> [OUTPUT.lua]
@@ -82,10 +81,10 @@ Convert the content of a .lua file to a specific .DAT file:
 ```
 ---
 
-### Convert a .LAYOUT file to .lua and back ###
-###  
+### Convert a .LAYOUT file to .lua and back
+
 Handles only \*.LAYOUT files.
-###  
+
 ```text
 Usage:
     lua layout2lua.lua <INPUT.LAYOUT>
