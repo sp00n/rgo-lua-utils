@@ -11,14 +11,15 @@ to be used a mod for the game.
 * lua-lfs (https://github.com/keplerproject/luafilesystem)
 
 A package containing all of these files can be found here: [https://github.com/sp00n/rgo-lua-pack](https://github.com/sp00n/rgo-lua-pack)
----
+
 
 
 ## Mod Helpers
 I've created a couple of useful batch files that help with extracting & creating mod files:  
 [https://github.com/sp00n/rgo-mod-helpers](https://github.com/sp00n/rgo-mod-helpers)  
----
 
+
+---
 
 ### Unpack a .PAK file
 
