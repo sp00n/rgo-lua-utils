@@ -580,18 +580,22 @@ local function process_entry(entry_key, entry, level)
     -- print(indent(level, string.format("Entry content length after properties:                         %s (hex: %s)", content_length, string.upper(string.format("%02x", content_length)))))
 
 
-    -- Additional property data
-    -- print(indent(level, "Checking for additional property data"))
+    -- Timeline data
+    -- print(indent(level, "Checking for timeline data"))
     
-    if ( entry.properties_additional_data ~= nil ) then
+    if ( entry.timeline_data ~= nil ) then
         -- The data is in hex format
-        local hex_data = entry.properties_additional_data:gsub(" ", "")
-        local additional_data_length  = string.len(hex_data) / 2    -- 2 hex characters per binary character
+        local hex_data = entry.timeline_data:gsub(" ", "")
+        local timeline_data_length = string.len(hex_data) / 2    -- 2 hex characters per binary character
 
-        -- print(indent(level+1, string.format("Additional property data found, length of data:    %s (hex: ", additional_data_length, string.upper(string.format("%02x", additional_data_length)))))
+        -- print(indent(level+1, string.format("Additional timeline data found, length of data:    %s (hex: ", timeline_data_length, string.upper(string.format("%02x", timeline_data_length)))))
+        -- print(indent(level+2, string.format("The data #1: %s", entry.timeline_data)))
+        -- print(indent(level+2, string.format("The data #2: %s", hex_data)))
+        -- print(indent(level+2, string.format("Length of hex string:   %s", string.len(hex_data))))
+        -- print(indent(level+2, string.format("Length of hex string/2: %s", string.len(hex_data) / 2)))
 
-        -- Write the length of the following additional property data
-        w:write(uint32(additional_data_length))
+        -- Write the length of the following timeline property data
+        w:write(uint32(timeline_data_length))
         content_length = content_length + 4
 
         -- Write the data to the file
@@ -599,16 +603,16 @@ local function process_entry(entry_key, entry, level)
             w:write(string.char(tonumber(byte, 16)))
         end
     
-        content_length = content_length + additional_data_length
+        content_length = content_length + timeline_data_length
     
-    -- No additional data
+    -- No timeline data
     else
-        -- print(indent(level+1, string.format("No additional property data found")))
+        -- print(indent(level+1, string.format("No additional timeline data found")))
         w:write(uint32(0))
         content_length = content_length + 4
     end
 
-    -- print(indent(level, string.format("Entry content length after additional property data:           %s (hex: %s)", content_length, string.upper(string.format("%02x", content_length)))))
+    -- print(indent(level, string.format("Entry content length after additional timeline data:           %s (hex: %s)", content_length, string.upper(string.format("%02x", content_length)))))
 
 
     -- Sub entries

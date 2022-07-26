@@ -247,7 +247,7 @@ local function get_property_entry(j, level)
     -- E7 DC AF BE    3199196391    rgba color value
     -- 24 EB 87 C2    3263687460    RIGHT, LEFT, FREE
 
-
+    -- The identifier
     r:seek("set", start_position + 2)
     local check_for_sub_string_raw    = r:read(4)
     local check_for_sub_string_hex    = get_hex(check_for_sub_string_raw)
@@ -257,9 +257,22 @@ local function get_property_entry(j, level)
     -- out:write(indent .. string.format("check_for_sub_string_hex: %s\n", check_for_sub_string_hex))
     -- out:write(indent .. string.format("check_for_sub_string_int: %s\n", check_for_sub_string_int))
 
+
+    local possible_second_length_position = r:seek()
+
+
+    -- The possible int value for the next entry (read 4 bytes)
+    local check_second_value_raw    = r:read(4)
+    local check_second_value_hex    = get_hex(check_second_value_raw)
+    local _, check_second_value_int = pcall(uint32, check_second_value_raw)
+
+
+    -- The possible length value for a string entry (read 2 bytes)
+    r:seek("set", possible_second_length_position)
     local check_second_length_raw    = r:read(2)
     local check_second_length_hex    = get_hex(check_second_length_raw)
     local _, check_second_length_int = pcall(uint16, check_second_length_raw)
+
 
     -- out:write(indent .. string.format("check_second_length_hex: %s\n", check_second_length_hex))
     -- out:write(indent .. string.format("check_second_length_int: %s\n", check_second_length_int))
@@ -267,10 +280,24 @@ local function get_property_entry(j, level)
 
     -- If the second length is exactly 6 less than the original length, then we have a string sub entry
     -- There may be exceptions though for some entries, which randomly match the +6
+    -- For example 08 00  XX XX XX XX  02 00 00 00  would be match, although it's just an integer value of 2
     -- Also, the string can have a length of zero, then the total length is 06 00, followed by 4 bytes, and then a 00 00
-    -- It seems that only strings have values that are not dividable by 4
+    -- It seems that only strings have values that are not dividable by 4, but they also can have a length that can be divided by 4
     local check_second_length_one = ( ( check_second_length_int > 0 and check_second_length_int + 6 == length ) or ( length == 6 and check_second_length_int == 0 ) )
-    local check_second_length_two = ( check_second_length_one and ( check_for_sub_string_hex ~= "ED AA 94 3A" and check_for_sub_string_hex ~= "EE AA 94 3A" ) )  -- These seem to be connected to hardpoint mounting locations, and can be followed by e.g. 02 00
+
+
+
+    -- We need to filter out the entries where the second "length" is actually just an int value that by chance matches the original content length
+    -- So far this only seems to be the case for entries with a length of 08 00 and a value of 02 00 XX XX
+    -- We assume that the 4 byte value is the same as the 2 byte value as a filter (02 00 == 02 00 00 00)
+    -- length == 8 and check_second_length_int == 2
+    local check_second_length_two = ( check_second_length_one and check_second_length_int ~= check_second_value_int )
+
+
+    -- Old, unreliable check
+    -- local check_second_length_two = ( check_second_length_one and ( check_for_sub_string_hex ~= "ED AA 94 3A" and check_for_sub_string_hex ~= "EE AA 94 3A" and check_for_sub_string_hex ~= "AD 7D 0F BE" ) )  -- These entries can be 08 00 XX XX XX XX 02 00 00 00
+    
+
     if ( check_second_length_one and check_second_length_two ) then
         out:write(indent .. "There's a second length with:             " .. string.lpad(string.format("%s bytes (hex: %s)", check_second_length_int, check_second_length_hex), 21) .. "\n")
 
@@ -400,6 +427,8 @@ local function get_property_entry(j, level)
         end
     end
 
+
+    -- Set the file pointer to the end position of the entry
     r:seek("set", end_position)
 
     -- prop_entry.length = length
@@ -523,29 +552,30 @@ local function get_main_entry(i, level)
     -- After the properties should be a separator with 00 00 00 00
     -- And after that two bytes with the number of sub entries
     -- The "separator" isn't actually a separator, it seems to be a length indicator for additional data that isn't a property or a sub entry
+    -- This seems to be "timeline" data
     current = r:seek()
-    local additional_properties_length_raw = r:read(4)
-    local additional_properties_length_hex = get_hex(additional_properties_length_raw)
-    local additional_properties_length_int = uint32(additional_properties_length_raw)
+    local timeline_data_length_raw = r:read(4)
+    local timeline_data_length_hex = get_hex(timeline_data_length_raw)
+    local timeline_data_length_int = uint32(timeline_data_length_raw)
 
     out:write(indent .. string.format("The property entries should have ended\n"))
     out:write(indent .. string.format("The remaining content length for this entry: %d bytes\n", remaining_entry_byte_length))
-    out:write(indent .. string.format("Additional property data length: %s (hex: %s)\n", additional_properties_length_int, additional_properties_length_hex))
+    out:write(indent .. string.format("Timeline data length: %s (hex: %s)\n", timeline_data_length_int, timeline_data_length_hex))
 
-    if ( additional_properties_length_int > 0 ) then
-        out:write(indent .. string.format("    There is additional property data, for which the syntax is currently unknown:\n"))
+    if ( timeline_data_length_int > 0 ) then
+        out:write(indent .. string.format("    There is additional timeline data, for which the syntax is currently unknown:\n"))
 
-        local additional_property_data_raw = r:read(additional_properties_length_int)
-        local additional_property_data_hex = get_hex(additional_property_data_raw)
+        local timeline_data_raw = r:read(timeline_data_length_int)
+        local timeline_data_hex = get_hex(timeline_data_raw)
 
-        out:write(indent .. string.format("    %s\n", additional_property_data_hex))
+        out:write(indent .. string.format("    %s\n", timeline_data_hex))
 
-        current_entry.properties_additional_data = additional_property_data_hex
+        current_entry.timeline_data = timeline_data_hex
 
-        remaining_entry_byte_length = remaining_entry_byte_length - additional_properties_length_int
+        remaining_entry_byte_length = remaining_entry_byte_length - timeline_data_length_int
     end
 
-    -- After the additional property data should be the number of sub entries
+    -- After the timeline data should be the number of sub entries
     local num_sub_entries_raw = r:read(2)
     local num_sub_entries_hex = get_hex(num_sub_entries_raw)
     local num_sub_entries_int = uint16(num_sub_entries_raw)
@@ -805,12 +835,12 @@ local function get_entry_string(level, key, entry, parent_key)
         STR = STR .. indent(level+1, '},   -- end properties\n')
     end
 
-    -- Additional property data
-    if ( entry.properties_additional_data ~= nil ) then
+    -- Timeline data
+    if ( entry.timeline_data ~= nil ) then
         STR = STR .. '\n'
-        STR = STR .. indent(level+1, '-- There\'s additional property data, for which the format is currently unknown\n')
-        STR = STR .. indent(level+1, '["properties_additional_data"] = ')
-        STR = STR .. '"' .. entry.properties_additional_data .. '",\n'
+        STR = STR .. indent(level+1, '-- There\'s additional timeline data, for which the format is currently unknown\n')
+        STR = STR .. indent(level+1, '["timeline_data"] = ')
+        STR = STR .. '"' .. entry.timeline_data .. '",\n'
     end
 
     -- Get sub entries
