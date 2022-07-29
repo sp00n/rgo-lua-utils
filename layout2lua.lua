@@ -756,7 +756,7 @@ local function get_property_string(level, property_key, property_entry)
                 if ( property_key == "COORDINATES" ) then
                     STR = STR .. '  -- X, Y, Z'
                 elseif ( property_key == "ROTATIONS" ) then
-                    STR = STR .. '  -- X, Y, Z1, Z2'
+                    STR = STR .. '  -- X, Y, Z, W (Quaternion)'
                 end
 
                 STR = STR .. '\n'
